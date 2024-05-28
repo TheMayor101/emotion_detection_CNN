@@ -1,1 +1,1 @@
-emotion_recognition_model.h5
+'data/train/'
