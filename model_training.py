@@ -13,6 +13,8 @@ batch_size = 32
 epochs = 50
 
 # Define the CNN architecture
+#I chose a model that uses the Sequential framwork in order to organize the layers in my model
+#each layer off the code is added using model.add and than I specificed the model
 model = Sequential()
 
 model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 1)))
@@ -40,6 +42,7 @@ model.add(Dropout(0.5))
 
 model.add(Dense(7, activation='softmax'))
 
+#I used the Adam optimizer a loss function called categorical_crossentropy and I check the model's accuracy in order to check it's sucess.
 model.compile(optimizer='ADAM', loss='categorical_crossentropy', metrics=['accuracy'])
 print(model.summary())
 
@@ -56,6 +59,7 @@ history = model.fit(da.train_generator,
                     validation_data=da.validation_generator,
                     validation_steps=num_test_imgs // batch_size)
 
+#I saved the model to a .h5 file in ordre to be able to use it later and not need to run it each time individually.
 model.save('emotion_recognition_model.h5')
 
 if __name__ == "__main__":

@@ -16,9 +16,11 @@ def preprocess_image(img_path):
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0
+    #returning the new images after we adapted it our model's needs
     return img_array
 
 # Function to predict emotion
 def predict_emotion(img_array):
     predictions = model.predict(img_array)
+    #we only want the max value of the predictions which is the emotion the model thinks is the most dominent in the image.
     return np.argmax(predictions)

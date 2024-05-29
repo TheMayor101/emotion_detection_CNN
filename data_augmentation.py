@@ -6,10 +6,15 @@ import os
 from matplotlib import pyplot as plt
 from collections import defaultdict
 
+#The images I found in the data set are 48 by 48 pixels.
 IMG_HEIGHT = 48
 IMG_WIDTH = 48
+
+# I chose to use a batch size of 32 after testing other options.
 batch_size = 32
 
+
+#from here the model takes the images that it trains on and get's tested on.
 train_data_dir = 'data/train/'
 validation_data_dir = 'data/test/'
 
@@ -87,6 +92,7 @@ validation_generator = validation_datagen.flow_from_directory(
     shuffle=True
 )
 
+#Here I show a few expamples for how the images look after they are augmented.
 def display_augmented_images(generator, num_images):
     images, _ = next(generator)
     plt.figure(figsize=(20, 10))
