@@ -1,5 +1,6 @@
 #This is the file where we create all the graphs for the model's results
 
+#I chose to use matplotlib for the graphyical showing of my models results
 import matplotlib.pyplot as plt
 
 #I created a graph that will show the validation loss and the training loss depending on the number of epochs.
