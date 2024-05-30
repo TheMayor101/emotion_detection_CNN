@@ -1,40 +1,32 @@
-    if self.user_lives <= 0 or self.model_lives <= 0:
-            messagebox.showinfo("Game Over", "The game is over. You can restart the game.")
-            return
+    # Create a label for the previous image if it exists
+        if hasattr(self, "prev_img_label"):
+            self.prev_img_label.destroy()  # Remove the previous image label if it exists
 
-        user_guess = self.emotion_var.get()
-        img_array = model.preprocess_image(self.img_path)
-        predicted_class = model.predict_emotion(img_array)
+        # Check if there's a previous image
+        if self.prev_image_path:
+            # Load and resize the previous image
+            prev_img = Image.open(self.prev_image_path)
+            prev_img = prev_img.resize((200, 200))
+            prev_img_tk = ImageTk.PhotoImage(prev_img)
 
-        # Call the check_guesses function
-        self.check_guesses(user_guess, predicted_class)
+            # Create a label for the previous image and pack it to the middle-left side
+            self.prev_img_label = tk.Label(self.root, image=prev_img_tk)
+            self.prev_img_label.image = prev_img_tk
+            self.prev_img_label.pack(side=tk.LEFT, padx=(50, 10), pady=(self.root.winfo_height() // 2 - 100, 10))  # Position it in the middle-left
 
-        result_text = f"CNN Model Prediction: {self.emotions[predicted_class]}\n"
-        result_text += f"Your Guess: {self.emotions[user_guess]}\n"
-        result_text += f"Correct Answer: {self.emotions[self.correct_answer_index]}\n"
+        # Load a new random image
+        random_folder = random.choice(os.listdir(test_folder))
+        random_image_path = os.path.join(test_folder, random_folder, random.choice(os.listdir(os.path.join(test_folder, random_folder))))
+        img = Image.open(random_image_path)
+        img = img.resize((400, 400))
+        img_tk = ImageTk.PhotoImage(img)
+        self.img_label.config(image=img_tk)
+        self.img_label.image = img_tk
+        self.img_path = random_image_path
 
-        if predicted_class == self.correct_answer_index and user_guess == self.correct_answer_index:
-            result_text += "You and the model both got it right!\n"
-        elif predicted_class == self.correct_answer_index:
-            result_text += "You got it right!\n"
-        elif user_guess == self.correct_answer_index:
-            result_text += "Model got it right!\n"
-        else:
-            self.user_lives -= 1
-            result_text += "Sorry, wrong guess!\n"
-            result_text += f"Remaining Lives - User: {self.user_lives}, Model: {self.model_lives}\n"
-            if self.user_lives == 0 or self.model_lives == 0:
-                result_text += "Game Over!"
-                self.restart_button.config(state=tk.NORMAL)
+        # Store the correct answer for the new image
+        correct_answer = os.path.basename(os.path.dirname(self.img_path))
+        self.correct_answer_index = self.emotions.index(correct_answer)
 
-        if predicted_class != self.correct_answer_index:
-            self.model_lives -= 1
-
-        self.result_label.config(text=result_text)
-        self.user_score_label.config(text=f"User: {self.user_score}")
-        self.model_score_label.config(text=f"Model: {self.model_score}")
-        self.user_lives_label.config(text=f"User Lives: {self.user_lives}")
-        self.model_lives_label.config(text=f"Model Lives: {self.model_lives}")
-
-        if self.user_lives > 0 and self.model_lives > 0:
-            self.load_random_image()
+        # Store the current image path as the previous image path
+        self.prev_image_path = random_image_path

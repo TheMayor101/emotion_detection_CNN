@@ -1,4 +1,4 @@
-
+#this file is responsible for the non GUI functions inside app.py
 
 import tensorflow as tf
 from keras.preprocessing import image

@@ -26,6 +26,7 @@ class EmotionRecognitionApp:
         self.model_lives = 3
         self.user_score = 0
         self.model_score = 0
+        self.prev_image_path = None  # Initialize prev_image_path attribute
 
         self.root = root
         self.root.title("Emotion Recognition")
@@ -67,14 +68,31 @@ class EmotionRecognitionApp:
         self.model_lives_label.pack()
 
         self.restart_button = tk.Button(root, text="Restart", command=self.restart_game, state=tk.DISABLED, bg="red", fg="white", font=("Helvetica", 12, "bold"))
-        self.restart_button.pack(pady=10)
+        self.restart_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=50)  # Position the restart button below the exit button
 
         self.exit_button = tk.Button(root, text="Exit", command=root.quit, bg="gray", fg="white", font=("Helvetica", 12, "bold"))
-        self.exit_button.pack(pady=10)
+        self.exit_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=10)  # Position the exit button at the top right corner
 
         self.load_random_image()
 
     def load_random_image(self):
+        # Create a label for the previous image if it exists
+        if hasattr(self, "prev_img_label"):
+            self.prev_img_label.destroy()  # Remove the previous image label if it exists
+
+        # Check if there's a previous image
+        if self.prev_image_path:
+            # Load and resize the previous image
+            prev_img = Image.open(self.prev_image_path)
+            prev_img = prev_img.resize((200, 200))
+            prev_img_tk = ImageTk.PhotoImage(prev_img)
+
+            # Create a label for the previous image and pack it in the middle of the left side
+            self.prev_img_label = tk.Label(self.root, image=prev_img_tk)
+            self.prev_img_label.image = prev_img_tk
+            self.prev_img_label.pack(side=tk.LEFT, padx=(50, 10), pady=(self.root.winfo_height() // 2 - 100, 10))  # Position it in the middle-left
+
+        # Load a new random image
         random_folder = random.choice(os.listdir(test_folder))
         random_image_path = os.path.join(test_folder, random_folder, random.choice(os.listdir(os.path.join(test_folder, random_folder))))
         img = Image.open(random_image_path)
@@ -84,42 +102,53 @@ class EmotionRecognitionApp:
         self.img_label.image = img_tk
         self.img_path = random_image_path
 
-        # Get correct answer from the dataset
+        # Store the correct answer for the new image
         correct_answer = os.path.basename(os.path.dirname(self.img_path))
         self.correct_answer_index = self.emotions.index(correct_answer)
 
+        # Store the current image path as the previous image path
+        self.prev_image_path = random_image_path
+
+
+
     def predict_emotion(self):
         if self.user_lives <= 0 or self.model_lives <= 0:
-            messagebox.showinfo("Game Over", "The game is over. You can restart the game.")
+            messagebox.showinfo("Game Over", "The game is over. You can restart the game or exit it.")
             return
 
         user_guess = self.emotion_var.get()
         img_array = model.preprocess_image(self.img_path)
         predicted_class = model.predict_emotion(img_array)
 
-        # Call the check_guesses function
-        self.check_guesses(user_guess, predicted_class)
-
         result_text = f"CNN Model Prediction: {self.emotions[predicted_class]}\n"
         result_text += f"Your Guess: {self.emotions[user_guess]}\n"
         result_text += f"Correct Answer: {self.emotions[self.correct_answer_index]}\n"
 
-        if predicted_class == self.correct_answer_index and user_guess == self.correct_answer_index:
-            result_text += "You and the model both got it right!\n"
-        elif predicted_class == self.correct_answer_index:
-            result_text += "You got it right!\n"
-        elif user_guess == self.correct_answer_index:
-            result_text += "Model got it right!\n"
+        if predicted_class == self.correct_answer_index:
+            if user_guess == self.correct_answer_index:
+                result_text += "You and the model both got it right!\n"
+                self.user_score += 1
+                self.model_score += 1
+            else:
+                result_text += "Model got it right!\n"
+                self.model_score += 1
+                self.user_lives -= 1
         else:
-            self.user_lives -= 1
-            result_text += "Sorry, wrong guess!\n"
-            result_text += f"Remaining Lives - User: {self.user_lives}, Model: {self.model_lives}\n"
-            if self.user_lives == 0 or self.model_lives == 0:
-                result_text += "Game Over!"
-                self.restart_button.config(state=tk.NORMAL)
+            if user_guess == self.correct_answer_index:
+                result_text += "You got it right!\n"
+                self.user_score += 1
+                self.model_lives -= 1
+            else:
+                result_text += "Sorry, wrong guess!\n"
+                self.user_lives -= 1
+                self.model_lives -= 1
 
-        if predicted_class != self.correct_answer_index:
-            self.model_lives -= 1
+        result_text += f"Remaining Lives - User: {self.user_lives}, Model: {self.model_lives}\n"
+
+        if self.user_lives == 0 or self.model_lives == 0:
+            winner = "User" if self.user_lives > 0 else "Model" if self.model_lives > 0 else "No one"
+            result_text += f"Game Over! {winner} wins!"
+            self.restart_button.config(state=tk.NORMAL)
 
         self.result_label.config(text=result_text)
         self.user_score_label.config(text=f"User: {self.user_score}")
@@ -129,18 +158,6 @@ class EmotionRecognitionApp:
 
         if self.user_lives > 0 and self.model_lives > 0:
             self.load_random_image()
-
-
-
-    def check_guesses(self, user_guess, model_prediction):
-        if user_guess == self.correct_answer_index and model_prediction == self.correct_answer_index:
-            self.user_score += 1
-            self.model_score += 1
-        elif user_guess == self.correct_answer_index:
-            self.user_score += 1
-        elif model_prediction == self.correct_answer_index:
-            self.model_score += 1
-
 
     def restart_game(self):
         self.user_lives = 3

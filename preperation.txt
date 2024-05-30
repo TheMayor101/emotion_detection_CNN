@@ -1,0 +1,17 @@
+ pip install keras
+ pip install matplotlib
+ pip install tensorflow
+ pip install numpy 
+import data_augmentation
+import model_training
+import plot_results
+import os
+import matplotlib.pyplot as plt
+from collections import defaultdict
+from keras.preprocessing.image import ImageDataGenerator
+from PIL import Image, ImageTk
+import tkinter as tk
+from tkinter import messagebox
+import random
+import tensorflow as tf
+import numpy as np
