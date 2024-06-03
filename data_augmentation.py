@@ -124,44 +124,20 @@ def display_augmented_images(generator, num_images):
     plt.tight_layout()
     plt.show()
 
-# Simulate the distribution after augmentation
-def simulate_augmented_distribution(generator, augment_factor=10):
-    augmented_category_counts = defaultdict(int)
+# Display a few augmented images from each category
+def display_augmented_images_per_category(generator, num_images):
     for category in generator.class_indices.keys():
-        augmented_category_counts[category] = train_category_counts[category] * augment_factor
-    return augmented_category_counts
-
-augmented_train_category_counts = simulate_augmented_distribution(train_generator)
-
-# Calculate augmented statistics
-total_augmented_train_images = sum(augmented_train_category_counts.values())
-average_augmented_train_images_per_category = total_augmented_train_images / len(augmented_train_category_counts)
-
-# Print augmented dataset statistics
-print(f"Total number of augmented training images: {total_augmented_train_images}")
-print(f"Average number of augmented training images per category: {average_augmented_train_images_per_category:.2f}")
-
-# Plot the augmented data
-augmented_train_categories = list(augmented_train_category_counts.keys())
-augmented_train_counts = list(augmented_train_category_counts.values())
-
-plt.figure(figsize=(18, 5))
-
-# Augmented Training data bar chart
-plt.subplot(1, 2, 1)
-plt.bar(augmented_train_categories, augmented_train_counts, color='skyblue')
-plt.xlabel('Categories')
-plt.ylabel('Number of Images')
-plt.title('Number of Augmented Training Images per Category')
-plt.xticks(rotation=45)
-
-# Augmented Training data pie chart
-plt.subplot(1, 2, 2)
-plt.pie(augmented_train_counts, labels=augmented_train_categories, autopct='%1.1f%%', startangle=140)
-plt.title('Augmented Training Image Distribution per Category')
-
-plt.tight_layout()
-plt.show()
+        print(f"Category: {category}")
+        category_generator = generator
+        images, _ = next(category_generator)
+        plt.figure(figsize=(20, 10))
+        for i in range(num_images):
+            plt.subplot(4, 8, i + 1)
+            plt.imshow(images[i].reshape(IMG_HEIGHT, IMG_WIDTH), cmap='gray')
+            plt.axis('off')
+        plt.tight_layout()
+        plt.show()
 
 if __name__ == "__main__":
     display_augmented_images(train_generator, 32) # showing the newly created images after the augmentation
+    display_augmented_images_per_category(train_generator, 8) # showing augmented images for each category

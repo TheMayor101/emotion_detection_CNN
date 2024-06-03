@@ -1,22 +1,23 @@
-#This is the main file from which we run the whole program
+#This is the main file from which the whole project runs.
 
-#importing the three files which in all of my project is written
-import data_augmentation
+
+#importing the file which in I created the model
 from model_training import EmotionRecognitionModel
-import plot_results
+# importing the file with all the ploting functions for visualzing the model's results
+import plot_results 
 
 
-#This way of running the main program is a convention in python
-#if __name__ == "__main__":
-    #data_augmentation.display_augmented_images(data_augmentation.train_generator, 32) #running the data_augmentation file which is first step before starting the training
-    #model_training #running the model_training file which in there the training of the model starts.
+
 
 
 if __name__ == "__main__":
+    """
+    This is the main file of the project so everything starts running from here.
+    """
+    #creating a new model using the class EmotionRecognitionModel and initalize function inside of it
     model = EmotionRecognitionModel()
+    #when training the model we would like to save the data of the model training for the visualizing the model's results over time
     history = model.train_model()
-    model.save_model('emotion_recognition_model.h5') #TODO check if I also need this save in addition to the save_model function
-    import plot_results
-    
-    
+    model.save_model('emotion_recognition_model.h5') 
+    #here we use the history we saved when training the model for our ploting functions
     plot_results.plot_training_history(history)

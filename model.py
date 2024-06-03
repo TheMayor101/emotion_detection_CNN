@@ -1,4 +1,4 @@
-#this file is responsible for the non GUI functions inside app.py
+# This file is responsible for the non-GUI functions inside app.py
 
 import tensorflow as tf
 from keras.preprocessing import image
@@ -10,17 +10,43 @@ path_to_model = "model/emotion_recognition_model.h5"
 # Load the trained CNN model
 model = tf.keras.models.load_model(path_to_model)
 
-# Define a function to preprocess the image
 def preprocess_image(img_path):
+    """
+    Preprocess the image so the model will be able to work with it.
+    
+    Parameters:
+    img_path (str): Path to the image file.
+    
+    Returns:
+    np.ndarray: Preprocessed image array.
+    """
+    # Load the image in grayscale mode and resize to 48x48 pixels
     img = image.load_img(img_path, color_mode='grayscale', target_size=(48, 48))
+    
+    # Convert the image to an array
     img_array = image.img_to_array(img)
+    
+    # Expand dimensions to match the model's input shape (1, 48, 48, 1)
     img_array = np.expand_dims(img_array, axis=0)
+    
+    # Normalize pixel values to be between 0 and 1
     img_array /= 255.0
-    #returning the new images after we adapted it our model's needs
+    
+    # Return the preprocessed image array
     return img_array
 
-# Function to predict emotion
 def predict_emotion(img_array):
+    """
+    Predict the emotion from the preprocessed image array.
+    
+    Parameters:
+    img_array (np.ndarray): Preprocessed image array.
+    
+    Returns:
+    int: Predicted emotion class index.
+    """
+    # Make predictions using the loaded model
     predictions = model.predict(img_array)
-    #we only want the max value of the predictions which is the emotion the model thinks is the most dominent in the image.
+    
+    # Return the index of the highest probability class
     return np.argmax(predictions)

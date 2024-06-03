@@ -1,77 +1,96 @@
+#This file is responsible for building the architecture for the CNN model.
+
+#I chose to use the Sequential libary for building my CNN model
 from keras.models import Sequential
+#importing all the layers
 from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Conv2D, MaxPooling2D
-import data_augmentation
+# importing the file that is responsible for the data_augmentation process
+import data_augmentation  
 import os
+# Library for visualizing neural network architectures
 import visualkeras  
-from PIL import ImageFont
-
-
 
 class EmotionRecognitionModel:
-    def __init__(self, img_height=48, img_width=48, batch_size=32, epochs=50, train_path="data/train/", test_path="data/test"):
-        self.img_height = img_height
-        self.img_width = img_width
-        self.batch_size = batch_size
-        self.epochs = epochs
-        self.train_path = train_path
-        self.test_path = test_path
-        self.model = self.initialize_layers()
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-        print(self.model.summary())
-        self.visualize_model()  # Call visualize_model method
+    def __init__(self, img_height=48, img_width=48, batch_size=32, epochs=75, train_path="data/train/", test_path="data/test"):
+        """
+        Initialize the EmotionRecognitionModel with given parameters.
+        """
+        self.img_height = img_height  # Height of the images
+        self.img_width = img_width  # Width of the images
+        self.batch_size = batch_size  # Number of samples per batch
+        self.epochs = epochs  # Number of training epochs
+        self.train_path = train_path  # The Path to the folder which contains the training data
+        self.test_path = test_path  # The Path to the folder which contains the test data
 
+        # Initialize and compile the model
+        self.model = self.initialize_layers()
+
+        #I chose to use adam as my optimizer, categorical_crossentropy as my loss function and accuracy and the metric to check how well the model is performing
+        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+        # Print model summary
+        print(self.model.summary())
+
+        # Visualize the model architecture
+        self.visualize_model()
 
     def initialize_layers(self):
         """
-        Creating the CNN model and adding the layers one after another
+        Creating the CNN model and adding the layers one after another.
         """
-        #first CNN layer
-        model = Sequential()
+        model = Sequential()  # Initialize the model as a Sequential model
+
+        # First CNN layer: Convolution, Batch Normalization
         model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(self.img_height, self.img_width, 1)))
         model.add(BatchNormalization())
 
-        #second CNN layer
+        # Second CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
         model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.2))
 
-        #third CNN layer
+        # Third CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
         model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.3))
 
-        #forth CNN layer
+        # Fourth CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
         model.add(Conv2D(256, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.4))
 
-        #flatten layer
+        # Flatten layer to convert 2D matrix data to a vector
         model.add(Flatten())
+
+        # Dense layer for classification
         model.add(Dense(512, activation='relu'))
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.5))  # Dropout to prevent overfitting
 
-        #Dense layer
+        # Output layer: 7 neurons for 7 classes with softmax activation
         model.add(Dense(7, activation='softmax'))
-    
+
+        #returning the newly created CNN model!
         return model
-
-
 
     def visualize_model(self):
         """
-        Visualize the model architecture using visualkeras
+        Graphyical Visualize the model architecture using visualkeras.
         """
         img = visualkeras.layered_view(self.model, to_file='model_visual.png')  # Create the image
         img.show()  # Display the image
 
     def train_model(self):
-
+        """
+        Train the model using the data generators from data_augmentation.
+        """
+        # Count the number of training and testing images
         num_train_imgs = sum([len(files) for r, d, files in os.walk(self.train_path)])
         num_test_imgs = sum([len(files) for r, d, files in os.walk(self.test_path)])
 
+        # Train the model using data augmentation
         history = self.model.fit(data_augmentation.train_generator,
                                  steps_per_epoch=num_train_imgs // self.batch_size,
                                  epochs=self.epochs,
@@ -80,10 +99,9 @@ class EmotionRecognitionModel:
 
         return history
 
-
-    #saving the model I trained. What we are actually saving here is the values of the parameters and biases the model perfected during training
     def save_model(self, filename):
+        """
+        Save the trained model to a file.
+        """
         self.model.save(filename)
-
-
 
