@@ -1,13 +1,9 @@
 #This is the main file from which the whole project runs.
 
-
 #importing the file which in I created the model
 from model_training import EmotionRecognitionModel
 # importing the file with all the ploting functions for visualzing the model's results
 import plot_results 
-
-
-
 
 
 if __name__ == "__main__":

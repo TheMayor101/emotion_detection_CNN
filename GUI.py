@@ -5,6 +5,7 @@ import os
 import model
 import random
 
+# Function to map emotion index to text
 def get_emotion_text(index):
     """
     Function to map emotion index to text
@@ -12,15 +13,16 @@ def get_emotion_text(index):
     emotions = ["angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"]
     return emotions[index]
 
+# Function to randomly select an image from the test folder
 def get_random_image_path(folder):
     """
     Function to randomly select an image from the test folder
     """
     images = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+    return random.choice(images)
 
-    return random.choice(images) #using the choice function from the random libary to chose a random image
-
-test_folder = 'data/test/'  # Directory containing test images
+# Directory containing test images
+test_folder = 'data/test/'
 
 class EmotionRecognitionApp:
     def __init__(self, root):
@@ -28,105 +30,95 @@ class EmotionRecognitionApp:
         self.model_lives = 3  # Initialize model lives
         self.user_score = 0  # Initialize user score
         self.model_score = 0  # Initialize model score
-        self.prev_image_path = None  # Initialize prev_image_path attribute
 
         self.root = root
         self.root.title("Emotion Recognition")  # Set window title
         self.root.attributes("-fullscreen", True)  # Set fullscreen mode
 
-        # Instruction label
-        self.label = tk.Label(root, text="Select the emotion you recognize in the picture:", font=("Helvetica", 14, "bold"), fg="blue")
-        self.label.pack(pady=10)
-
-        self.emotion_var = tk.IntVar()  # Variable to store the selected emotion index
-        self.emotions = ["angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"]  # List of emotions
-        self.radio_buttons = []  # List to store radio button widgets
-        
-        # Create radio buttons for emotion selection
-        for i, emotion in enumerate(self.emotions):
-            rb = tk.Radiobutton(root, text=emotion, variable=self.emotion_var, value=i, font=("Helvetica", 12, "bold"), fg="green")
-            rb.pack(anchor='w', padx=20, pady=5)
-            self.radio_buttons.append(rb)  # Add radio button to the list
-
-        self.img_label = tk.Label(root)  # Label to display the image
-        self.img_label.pack(pady=10)
-
-        # Predict button
-        self.predict_button = tk.Button(root, text="Predict", command=self.predict_emotion, bg="orange", fg="white", font=("Helvetica", 12, "bold"))
-        self.predict_button.pack(pady=10)
-
-        self.result_label = tk.Label(root, text="", font=("Helvetica", 12))  # Label to display prediction results
-        self.result_label.pack(pady=10)
-
-        self.score_label = tk.Label(root, text="Scores:", font=("Helvetica", 14, "bold"))  # Label to display score text
-        self.score_label.pack()
-        
-        # Display user score
-        self.user_score_label = tk.Label(root, text=f"User: {self.user_score}", font=("Helvetica", 12))
-        self.user_score_label.pack()
-
-        # Display model score
-        self.model_score_label = tk.Label(root, text=f"Model: {self.model_score}", font=("Helvetica", 12))
-        self.model_score_label.pack()
-
-        # Display user lives
-        self.user_lives_label = tk.Label(root, text=f"User Lives: {self.user_lives}", font=("Helvetica", 12))
-        self.user_lives_label.pack()
-
-        # Display model lives
-        self.model_lives_label = tk.Label(root, text=f"Model Lives: {self.model_lives}", font=("Helvetica", 12))
-        self.model_lives_label.pack()
-
-        # Restart button
-        self.restart_button = tk.Button(root, text="Restart", command=self.restart_game, state=tk.DISABLED, bg="red", fg="white", font=("Helvetica", 12, "bold"))
-        self.restart_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=50)  # Position the restart button
-
-        # Exit button
-        self.exit_button = tk.Button(root, text="Exit", command=root.quit, bg="gray", fg="white", font=("Helvetica", 12, "bold"))
-        self.exit_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=10)  # Position the exit button
+        self.setup_ui()  # Setup the user interface
 
         # Load initial random image
         self.load_random_image()
 
+    def setup_ui(self):
+        """Setup the UI elements."""
+        # Instruction label
+        self.label = tk.Label(self.root, text="Select the emotion you recognize in the picture:", font=("Arial", 16, "bold"), fg="black")
+        self.label.pack(pady=10)
+
+        # Variable to store the selected emotion index
+        self.emotion_var = tk.IntVar()
+        self.emotions = ["angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"]  # List of emotions
+        self.radio_buttons = []
+
+        # Create radio buttons for emotion selection
+        for i, emotion in enumerate(self.emotions):
+            rb = tk.Radiobutton(self.root, text=emotion, variable=self.emotion_var, value=i, font=("Arial", 14), fg="black")
+            rb.pack(anchor='w', padx=20, pady=5)
+            self.radio_buttons.append(rb)  # Add radio button to the list
+
+        # Image display label
+        self.img_label = tk.Label(self.root)
+        self.img_label.pack(pady=10)
+
+        # Predict button
+        self.predict_button = tk.Button(self.root, text="Predict", command=self.predict_emotion, bg="blue", fg="white", font=("Arial", 14, "bold"))
+        self.predict_button.pack(pady=10)
+
+        # Result label
+        self.result_label = tk.Label(self.root, text="", font=("Arial", 14))
+        self.result_label.pack(pady=10)
+
+        # Score and lives display
+        self.setup_scoreboard()  # Setup the scoreboard for displaying scores and lives
+
+        # Restart and exit buttons
+        self.setup_control_buttons()  # Setup control buttons for restarting and exiting the game
+
+    def setup_scoreboard(self):
+        """Setup the scoreboard for displaying scores and lives."""
+        self.score_label = tk.Label(self.root, text="Scores:", font=("Arial", 16, "bold"))
+        self.score_label.pack()
+        
+        self.user_score_label = tk.Label(self.root, text=f"User: {self.user_score}", font=("Arial", 14))
+        self.user_score_label.pack()
+
+        self.model_score_label = tk.Label(self.root, text=f"Model: {self.model_score}", font=("Arial", 14))
+        self.model_score_label.pack()
+
+        self.user_lives_label = tk.Label(self.root, text=f"User Lives: {self.user_lives}", font=("Arial", 14))
+        self.user_lives_label.pack()
+
+        self.model_lives_label = tk.Label(self.root, text=f"Model Lives: {self.model_lives}", font=("Arial", 14))
+        self.model_lives_label.pack()
+
+    def setup_control_buttons(self):
+        """Setup control buttons for restarting and exiting the game."""
+        self.restart_button = tk.Button(self.root, text="Restart", command=self.restart_game, state=tk.DISABLED, bg="green", fg="white", font=("Arial", 14, "bold"))
+        self.restart_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=50)
+
+        self.exit_button = tk.Button(self.root, text="Exit", command=self.root.quit, bg="red", fg="white", font=("Arial", 14, "bold"))
+        self.exit_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=10)
+
     def load_random_image(self):
-        """
-        Function to load a random image from the test folder and display it
-        """
-        if hasattr(self, "prev_img_label"):
-            self.prev_img_label.destroy()  # Remove the previous image label if it exists
-
-        if self.prev_image_path:
-            # Load and resize the previous image
-            prev_img = Image.open(self.prev_image_path)
-            prev_img = prev_img.resize((200, 200))
-            prev_img_tk = ImageTk.PhotoImage(prev_img)
-
-            # Display the previous image
-            self.prev_img_label = tk.Label(self.root, image=prev_img_tk)
-            self.prev_img_label.image = prev_img_tk
-            self.prev_img_label.pack(side=tk.LEFT, padx=(50, 10), pady=(self.root.winfo_height() // 2 - 100, 10))
-
-        # Select a new random image from the test folder
-        random_folder = random.choice(os.listdir(test_folder))
-        random_image_path = os.path.join(test_folder, random_folder, random.choice(os.listdir(os.path.join(test_folder, random_folder))))
-        img = Image.open(random_image_path)
-        img = img.resize((400, 400))  # Resize the new image
-        img_tk = ImageTk.PhotoImage(img)
+        """Load a random image from the test folder and display it."""
+        random_folder = random.choice(os.listdir(test_folder))  # Select a random folder from the test folder
+        random_image_path = os.path.join(test_folder, random_folder, random.choice(os.listdir(os.path.join(test_folder, random_folder))))  # Select a random image from the selected folder
+        
+        img = Image.open(random_image_path)  # Open the selected image
+        img = img.resize((400, 400))  # Resize the image
+        img_tk = ImageTk.PhotoImage(img)  # Convert image to PhotoImage for Tkinter
+        
         self.img_label.config(image=img_tk)  # Update the image label with the new image
-        self.img_label.image = img_tk
+        self.img_label.image = img_tk  # Keep a reference to avoid garbage collection
         self.img_path = random_image_path  # Store the path of the new image
 
         # Store the correct answer for the new image
         correct_answer = os.path.basename(os.path.dirname(self.img_path))
         self.correct_answer_index = self.emotions.index(correct_answer)
 
-        # Store the current image path as the previous image path
-        self.prev_image_path = random_image_path
-
     def predict_emotion(self):
-        """
-        Function to predict the emotion of the displayed image and update the scores and lives
-        """
+        """Predict the emotion of the displayed image and update scores and lives."""
         if self.user_lives <= 0 or self.model_lives <= 0:
             # Show game over message if user or model lives are zero
             messagebox.showinfo("Game Over", "The game is over. You can restart the game or exit it.")
@@ -137,10 +129,11 @@ class EmotionRecognitionApp:
         predicted_class = model.predict_emotion(img_array)  # Get the model's prediction
 
         # Prepare the result text
-        result_text = f"CNN Model Prediction: {self.emotions[predicted_class]}\n"
-        result_text += f"Your Guess: {self.emotions[user_guess]}\n"
-        result_text += f"Correct Answer: {self.emotions[self.correct_answer_index]}\n"
+        result_text = (f"CNN Model Prediction: {self.emotions[predicted_class]}\n"
+                       f"Your Guess: {self.emotions[user_guess]}\n"
+                       f"Correct Answer: {self.emotions[self.correct_answer_index]}\n")
 
+        # Update scores and lives based on predictions
         if predicted_class == self.correct_answer_index:
             if user_guess == self.correct_answer_index:
                 # Both user and model got it right
@@ -183,18 +176,14 @@ class EmotionRecognitionApp:
             self.load_random_image()
 
     def restart_game(self):
+        """Restart the game by resetting scores and lives."""
         self.user_lives = 3
         self.model_lives = 3
         self.user_score = 0
         self.model_score = 0
-        self.result_label.config(text="")
-        self.predict_button.config(state=tk.NORMAL)
-        self.restart_button.config(state=tk.DISABLED)
-        self.user_score_label.config(text=f"User: {self.user_score}")
-        self.model_score_label.config(text=f"Model: {self.model_score}")
-        self.user_lives_label.config(text=f"User Lives: {self.user_lives}")
-        self.model_lives_label.config(text=f"Model Lives: {self.model_lives}")
-        self.load_random_image()
+        self.result_label.config(text="")  # Clear result label
+        self.load_random_image()  # Load a new random image
+        self.restart_button.config(state=tk.DISABLED)  # Disable the restart button
 
 if __name__ == "__main__":
     root = tk.Tk()
