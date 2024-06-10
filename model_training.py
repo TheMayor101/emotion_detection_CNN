@@ -45,29 +45,29 @@ class EmotionRecognitionModel:
         model.add(BatchNormalization())
 
         # Second CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
-        model.add(Conv2D(256, kernel_size=(3, 3), activation='relu'))
+        model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.2))
 
         # Third CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
-        model.add(Conv2D(256, kernel_size=(3, 3), activation='relu'))
+        model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.3))
 
         # Fourth CNN layer: Convolution, Batch Normalization, Max Pooling, Dropout
         model.add(Conv2D(256, kernel_size=(3, 3), activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.3))
+        model.add(Dropout(0.4))
 
         # Flatten layer to convert 2D matrix data to a vector
         model.add(Flatten())
 
         # Dense layer for classification
         model.add(Dense(512, activation='relu'))
-        model.add(Dropout(0.4))  # Dropout to prevent overfitting
+        model.add(Dropout(0.5))  # Dropout to prevent overfitting
 
         # Output layer: 7 neurons for 7 classes with softmax activation
         model.add(Dense(7, activation='softmax'))
