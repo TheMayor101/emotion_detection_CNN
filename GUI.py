@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
-import model
+import model_handeling
 import random
 
 # Function to map emotion index to text
@@ -125,8 +125,8 @@ class EmotionRecognitionApp:
             return
 
         user_guess = self.emotion_var.get()  # Get the user's selected emotion
-        img_array = model.preprocess_image(self.img_path)  # Preprocess the image for model prediction
-        predicted_class = model.predict_emotion(img_array)  # Get the model's prediction
+        img_array = model_handeling.preprocess_image(self.img_path)  # Preprocess the image for model prediction
+        predicted_class = model_handeling.predict_emotion(img_array)  # Get the model's prediction
 
         # Prepare the result text
         result_text = (f"CNN Model Prediction: {self.emotions[predicted_class]}\n"

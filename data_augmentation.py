@@ -13,8 +13,9 @@ batch_size = 32
 # Directories for training and validation datasets
 train_data_dir = 'data/train/'
 validation_data_dir = 'data/test/'
+#I used the images inside the test folder for validation for the project
 
-# Function to count images in each category within a directory
+# Function to count images in each category within a directory for the graphs
 def count_images(data_dir):
     category_counts = defaultdict(int)
     for category in os.listdir(data_dir):
