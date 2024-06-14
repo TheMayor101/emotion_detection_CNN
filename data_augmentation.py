@@ -17,14 +17,14 @@ validation_data_dir = 'data/test/'
 
 # Function to count images in each category within a directory for the graphs
 def count_images(data_dir):
-    category_counts = defaultdict(int)
+    category_num = defaultdict(int)
     for category in os.listdir(data_dir):
         category_folder = os.path.join(data_dir, category)
         if os.path.isdir(category_folder):
             # Count the number of files (images) in each category folder
             num_images = len([img for img in os.listdir(category_folder) if os.path.isfile(os.path.join(category_folder, img))])
-            category_counts[category] = num_images
-    return category_counts
+            category_num[category] = num_images
+    return category_num
 
 # Count the number of images in each category for training and validation datasets
 train_category_num = count_images(train_data_dir)
@@ -37,15 +37,14 @@ average_train_images_per_category = total_train_images / len(train_category_num)
 total_validation_images = sum(validation_category_num.values())
 average_validation_images_per_category = total_validation_images / len(validation_category_num)
 
-# Print dataset statistics
-print(f"Total number of training images: {total_train_images}")
-print(f"Average number of training images per category: {average_train_images_per_category:.2f}")
-print(f"Total number of validation images: {total_validation_images}")
-print(f"Average number of validation images per category: {average_validation_images_per_category:.2f}")
+print("The Total amount of training images is: " + str(total_train_images))
+print("The Average amount of training images in every category is: " + "{:.2f}".format(average_train_images_per_category))
+print("The Total number of validation images: " + str(total_validation_images))
+print("The Average number of validation images per category: " + "{:.2f}".format(average_validation_images_per_category))
 
 # Plot the data distribution for training and validation datasets
 train_categories = list(train_category_num.keys())
-train_counts = list(train_category_num.values())
+train_amount = list(train_category_num.values())
 validation_categories = list(validation_category_num.keys())
 validation_counts = list(validation_category_num.values())
 
@@ -53,7 +52,7 @@ plt.figure(figsize=(18, 10))
 
 # Bar chart for training data
 plt.subplot(2, 2, 1)
-plt.bar(train_categories, train_counts, color='skyblue')
+plt.bar(train_categories, train_amount, color='skyblue')
 plt.xlabel('Categories')
 plt.ylabel('Number of Images')
 plt.title('Number of Training Images per Category')
@@ -61,7 +60,7 @@ plt.xticks(rotation=45)
 
 # Pie chart for training data
 plt.subplot(2, 2, 2)
-plt.pie(train_counts, labels=train_categories, autopct='%1.1f%%', startangle=140)
+plt.pie(train_amount, labels=train_categories, autopct='%1.1f%%', startangle=140)
 plt.title('Training Image Distribution per Category')
 
 # Bar chart for validation data
@@ -99,11 +98,11 @@ validation_datagen = ImageDataGenerator(rescale=1. / 255)
 # Create data generators for training and validation datasets
 train_generator = train_datagen.flow_from_directory(
     train_data_dir,
-    color_mode='grayscale', # Use grayscale images
+    color_mode='grayscale', 
     target_size=(IMG_HEIGHT, IMG_WIDTH),
     batch_size=batch_size,
-    class_mode='categorical', # Multi-class classification
-    shuffle=True # Shuffle images each epoch
+    class_mode='categorical', 
+    shuffle=True 
 )
 
 validation_generator = validation_datagen.flow_from_directory(
@@ -116,7 +115,10 @@ validation_generator = validation_datagen.flow_from_directory(
 )
 
 # Function to display a batch of augmented images
-def display_augmented_images(generator, num_images):
+def display_augmented_images(generator, num_images): 
+    """
+    Displaying a few Augmented images to show how the images look after augmentation
+    """
     images, _ = next(generator)
     plt.figure(figsize=(20, 10))
     for i in range(num_images):

@@ -13,14 +13,14 @@ import visualkeras
 class EmotionRecognitionModel:
     def __init__(self, img_height=48, img_width=48, batch_size=32, epochs=50, train_path="data/train/", test_path="data/test"):
         """
-        Initialize the EmotionRecognitionModel with given parameters.
+        Initializes all the parameters .
         """
-        self.img_height = img_height  # Height of the images
-        self.img_width = img_width  # Width of the images
-        self.batch_size = batch_size  # Number of samples per batch
-        self.epochs = epochs  # Number of training epochs
-        self.train_path = train_path  # The Path to the folder which contains the training data
-        self.test_path = test_path  # The Path to the folder which contains the test data
+        self.img_height = img_height  
+        self.img_width = img_width  
+        self.batch_size = batch_size  
+        self.epochs = epochs  
+        self.train_path = train_path  
+        self.test_path = test_path  
 
         # Initialize and compile the model
         self.model = self.initialize_layers()
@@ -79,8 +79,8 @@ class EmotionRecognitionModel:
         """
         Graphyical Visualize the model architecture using visualkeras.
         """
-        img = visualkeras.layered_view(self.model, to_file='model_visual.png')  # Create the image
-        img.show()  # Display the image
+        img = visualkeras.layered_view(self.model, to_file='model_visual.png')  
+        img.show() 
 
     def train_model(self):
         """

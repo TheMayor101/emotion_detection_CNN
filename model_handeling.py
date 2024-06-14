@@ -7,33 +7,27 @@ import numpy as np
 # Path to the trained CNN model
 path_to_model = "model/emotion_recognition_model.h5"
 
-# Load the trained CNN model
+
 model = tf.keras.models.load_model(path_to_model)
 
 def preprocess_image(img_path):
     """
     Preprocess the image so the model will be able to work with it.
-    
+    a few operations are done. converted the image to and array, expended it dimenations to fit the model needs and normalized the values.
     """
-    # Load the image in grayscale mode and resize to 48x48 pixels
     img = image.load_img(img_path, color_mode='grayscale', target_size=(48, 48))
     
-    # Convert the image to an array
     img_array = image.img_to_array(img)
     
-    # Expand dimensions to match the model's input shape (1, 48, 48, 1)
     img_array = np.expand_dims(img_array, axis=0)
     
-    # Normalize pixel values to be between 0 and 1
     img_array /= 255.0
     
-    # Return the preprocessed image array
     return img_array
 
 def predict_emotion(img_array):
     """
     Predicts the emotion from the preprocessed image array.
-    
     """
     # Make predictions using the loaded model
     predictions = model.predict(img_array)
