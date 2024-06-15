@@ -1,7 +1,11 @@
- pip install keras
+pip install keras
  pip install matplotlib
  pip install tensorflow
  pip install numpy 
+Pip install tkinter
+Pip install pillow
+Pip install visualkeras
+
 import data_augmentation
 import model_training
 import plot_results
