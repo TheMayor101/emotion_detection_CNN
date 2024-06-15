@@ -1,3 +1,7 @@
+"""
+Contains function responsible for modifying the images before sending them as input for the model
+"""
+
 from keras.preprocessing.image import ImageDataGenerator
 import os
 from matplotlib import pyplot as plt
@@ -7,7 +11,7 @@ from collections import defaultdict
 IMG_HEIGHT = 48
 IMG_WIDTH = 48
 
-# Batch size - chosen after testing different options
+# Batch size - chosen after testing different optionss
 batch_size = 32
 
 # Directories for training and validation datasets
@@ -15,11 +19,14 @@ train_data_dir = 'data/train/'
 validation_data_dir = 'data/test/'
 #I used the images inside the test folder for validation for the project
 
-# Function to count images in each category within a directory for the graphs
-def count_images(data_dir):
+
+def count_images(data_dir_path):
+    """
+    # Counts number of images in the dataset, in each emotion category
+    """
     category_num = defaultdict(int)
-    for category in os.listdir(data_dir):
-        category_folder = os.path.join(data_dir, category)
+    for category in os.listdir(data_dir_path):
+        category_folder = os.path.join(data_dir_path, category)
         if os.path.isdir(category_folder):
             # Count the number of files (images) in each category folder
             num_images = len([img for img in os.listdir(category_folder) if os.path.isfile(os.path.join(category_folder, img))])

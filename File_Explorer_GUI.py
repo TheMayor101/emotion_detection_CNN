@@ -1,3 +1,6 @@
+#I did not use this file for the project
+#decide if I want to use it to present to the examiner
+
 import tkinter as tk
 from tkinter import filedialog, Toplevel
 from PIL import Image, ImageTk, ImageOps

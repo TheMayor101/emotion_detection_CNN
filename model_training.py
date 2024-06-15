@@ -9,11 +9,12 @@ import data_augmentation
 import os
 # Library for visualizing neural network architectures
 import visualkeras  
+import plot_results
 
 class EmotionRecognitionModel:
     def __init__(self, img_height=48, img_width=48, batch_size=32, epochs=50, train_path="data/train/", test_path="data/test"):
         """
-        Initializes all the parameters .
+        Initializes model's parameters
         """
         self.img_height = img_height  
         self.img_width = img_width  
@@ -25,7 +26,7 @@ class EmotionRecognitionModel:
         # Initialize and compile the model
         self.model = self.initialize_layers()
 
-        #I chose to use adam as my optimizer, categorical_crossentropy as my loss function and accuracy and the metric to check how well the model is performing
+        # I chose to use adam as my optimizer, categorical_crossentropy as my loss function and accuracy and the metric to check how well the model is performing
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
         # Print model summary
@@ -62,12 +63,12 @@ class EmotionRecognitionModel:
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.4))
 
-        # Flatten layer to convert 2D matrix data to a vector
+        # Flatten layer to convert the matrix to an array
         model.add(Flatten())
 
         # Dense layer for classification
         model.add(Dense(512, activation='relu'))
-        model.add(Dropout(0.5))  # Dropout to prevent overfitting
+        model.add(Dropout(0.5))  
 
         # Output layer: 7 neurons for 7 classes with softmax activation
         model.add(Dense(7, activation='softmax'))
@@ -104,4 +105,17 @@ class EmotionRecognitionModel:
         Save the trained model to a file.
         """
         self.model.save(filename)
+
+
+
+if __name__ == "__main__":
+    # Creating a new model using the class EmotionRecognitionModel and initalize function inside of it
+    model = EmotionRecognitionModel()
+
+    # When training the model we would like to save the data of the model training for the visualizing the model's results over time
+    history = model.train_model()
+    model.save_model('emotion_recognition_model.h5') 
+
+    # Here we use the history we saved when training the model for our ploting functions
+    plot_results.plot_training_history(history)
 
