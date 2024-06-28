@@ -1,3 +1,4 @@
+# Imports
 import os
 import random
 import tkinter as tk
@@ -5,7 +6,8 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import model_handeling
 
-# Constants that I used in my code
+
+# Constants
 EMOTIONS = ["angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"]
 TEST_FOLDER = 'data/test/'
 IMG_SIZE = (400, 400)
@@ -15,10 +17,11 @@ FULLSCREEN_MODE = True
 FONT_TYPE = "Arial"
 BOLD_TYPE = "bold"
 
+
 class EmotionRecognitionApp:
     def __init__(self, root):
         """
-        Initalizes all the values for the game
+        Initializes all the values for the game
         """
         self.user_lives = USER_INITIAL_LIVES
         self.model_lives = MODEL_INITIAL_LIVES
@@ -55,25 +58,25 @@ class EmotionRecognitionApp:
 
     def setup_scoreboard(self):
         """
-        Here the scores are counted and presented
+        Drawing the score on the screen
         """
         tk.Label(self.root, text="The Score", font=(FONT_TYPE, 16, BOLD_TYPE)).pack()
 
-        self.user_score = tk.Label(self.root, text=f"User: {self.user_score}", font=(FONT_TYPE, 14))
-        self.user_score.pack()
+        self.user_score_label = tk.Label(self.root, text=f"User: {self.user_score}", font=(FONT_TYPE, 14))
+        self.user_score_label.pack()
 
         self.model_score_label = tk.Label(self.root, text=f"Model: {self.model_score}", font=(FONT_TYPE, 14))
         self.model_score_label.pack()
 
-        self.user_lives = tk.Label(self.root, text=f"User Lives: {self.user_lives}", font=(FONT_TYPE, 14))
-        self.user_lives.pack()
+        self.user_lives_label = tk.Label(self.root, text=f"User Lives: {self.user_lives}", font=(FONT_TYPE, 14))
+        self.user_lives_label.pack()
 
-        self.model_lives = tk.Label(self.root, text=f"Model Lives: {self.model_lives}", font=(FONT_TYPE, 14))
-        self.model_lives.pack()
+        self.model_lives_label = tk.Label(self.root, text=f"Model Lives: {self.model_lives}", font=(FONT_TYPE, 14))
+        self.model_lives_label.pack()
 
     def setup_control_buttons(self):
         """
-        Here I created the buttons that are used in the game. Restart, Predict and Exit
+        Drawing the the Restart and Exit buttons
         """
         self.restart_button = tk.Button(self.root, text="Restart", command=self.restart_game, state=tk.DISABLED, bg="green", fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
         self.restart_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=50)
@@ -99,7 +102,9 @@ class EmotionRecognitionApp:
         self.correct_answer_index = EMOTIONS.index(correct_answer)
 
     def predict_emotion(self):
-        """Predict the emotion of the displayed image and update scores and lives."""
+        """
+        Predict the emotion of the displayed image and update scores and lives
+        """
         if self.user_lives <= 0 or self.model_lives <= 0:
             messagebox.showinfo("Game Over", "The game is over. You can restart the game or exit it.")
             return
@@ -137,16 +142,18 @@ class EmotionRecognitionApp:
             self.restart_button.config(state=tk.NORMAL)
 
         self.result_label.config(text=result_text)
-        self.user_score.config(text=f"User: {self.user_score}")
+        self.user_score_label.config(text=f"User: {self.user_score}")
         self.model_score_label.config(text=f"Model: {self.model_score}")
-        self.user_lives.config(text=f"User Lives: {self.user_lives}")
-        self.model_lives.config(text=f"Model Lives: {self.model_lives}")
+        self.user_lives_label.config(text=f"User Lives: {self.user_lives}")
+        self.model_lives_label.config(text=f"Model Lives: {self.model_lives}")
 
         if self.user_lives > 0 and self.model_lives > 0:
             self.load_random_image()
 
     def restart_game(self):
-        """Restart the game by resetting scores and lives."""
+        """
+        Restart the game by resetting scores and lives
+        """
         self.user_lives = USER_INITIAL_LIVES
         self.model_lives = MODEL_INITIAL_LIVES
         self.user_score = 0
@@ -154,6 +161,7 @@ class EmotionRecognitionApp:
         self.result_label.config(text="")
         self.load_random_image()
         self.restart_button.config(state=tk.DISABLED)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
