@@ -1,4 +1,3 @@
-# Imports
 import os
 import random
 import tkinter as tk
@@ -6,17 +5,15 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import model_handeling
 
-
 # Constants
 EMOTIONS = ["angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"]
 TEST_FOLDER = 'data/test/'
 IMG_SIZE = (400, 400)
 USER_INITIAL_LIVES = 3
 MODEL_INITIAL_LIVES = 3
-FULLSCREEN_MODE = True
+FULLSCREEN_MODE = True  # Set fullscreen mode to True
 FONT_TYPE = "Arial"
 BOLD_TYPE = "bold"
-
 
 class EmotionRecognitionApp:
     def __init__(self, root):
@@ -30,13 +27,17 @@ class EmotionRecognitionApp:
         self.root = root
 
         self.root.title("Emotion Recognition")
-        self.root.attributes("-fullscreen", FULLSCREEN_MODE)
+        self.root.attributes("-fullscreen", FULLSCREEN_MODE)  # Set fullscreen mode
 
         self.setup_ui()
         self.load_random_image()
 
     def setup_ui(self):
-        self.label = tk.Label(self.root, text="Please Select the emotion you recognize in the image", font=(FONT_TYPE, 16, BOLD_TYPE))
+        """
+        Setting up the user interface elements
+        """
+        self.label = tk.Label(self.root, text="Please Select the emotion you recognize in the image",
+                              font=(FONT_TYPE, 16, BOLD_TYPE))
         self.label.pack(pady=10)
 
         self.emotion_var = tk.IntVar()
@@ -47,7 +48,8 @@ class EmotionRecognitionApp:
         self.img_label = tk.Label(self.root)
         self.img_label.pack(pady=10)
 
-        self.predict_button = tk.Button(self.root, text="Predict", command=self.predict_emotion, bg="blue", fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
+        self.predict_button = tk.Button(self.root, text="Predict", command=self.predict_emotion, bg="blue",
+                                        fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
         self.predict_button.pack(pady=10)
 
         self.result_label = tk.Label(self.root, text="", font=(FONT_TYPE, 14))
@@ -58,7 +60,7 @@ class EmotionRecognitionApp:
 
     def setup_scoreboard(self):
         """
-        Drawing the score on the screen
+        Setting up the scoreboard elements
         """
         tk.Label(self.root, text="The Score", font=(FONT_TYPE, 16, BOLD_TYPE)).pack()
 
@@ -76,12 +78,14 @@ class EmotionRecognitionApp:
 
     def setup_control_buttons(self):
         """
-        Drawing the the Restart and Exit buttons
+        Setting up the control buttons (Restart and Exit)
         """
-        self.restart_button = tk.Button(self.root, text="Restart", command=self.restart_game, state=tk.DISABLED, bg="green", fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
+        self.restart_button = tk.Button(self.root, text="Restart", command=self.restart_game, state=tk.DISABLED,
+                                        bg="green", fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
         self.restart_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=50)
 
-        self.exit_button = tk.Button(self.root, text="Exit", command=self.root.quit, bg="red", fg="white", font=(FONT_TYPE, 14, BOLD_TYPE))
+        self.exit_button = tk.Button(self.root, text="Exit", command=self.root.quit, bg="red", fg="white",
+                                     font=(FONT_TYPE, 14, BOLD_TYPE))
         self.exit_button.place(relx=1.0, rely=0.0, anchor='ne', x=-10, y=10)
 
     def load_random_image(self):
@@ -161,7 +165,6 @@ class EmotionRecognitionApp:
         self.result_label.config(text="")
         self.load_random_image()
         self.restart_button.config(state=tk.DISABLED)
-
 
 if __name__ == "__main__":
     root = tk.Tk()
