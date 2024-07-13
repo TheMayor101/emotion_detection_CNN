@@ -9,6 +9,7 @@ if __name__ == "__main__":
     """
     From here the project starts running
     """
+
     root = tk.Tk()
     app = EmotionRecognitionApp(root)
     root.mainloop()
