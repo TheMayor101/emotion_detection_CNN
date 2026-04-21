@@ -6,12 +6,6 @@ from GUI import EmotionRecognitionApp
 
 
 if __name__ == "__main__":
-    """
-    From here the project starts running
-    """
-
-    root = tk.Tk()
-    app = EmotionRecognitionApp(root)
+    root: tk.Tk = tk.Tk()
+    app: EmotionRecognitionApp = EmotionRecognitionApp(root)
     root.mainloop()
-
-
